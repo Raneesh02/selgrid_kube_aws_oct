@@ -33,7 +33,7 @@ public class DriverManager {
         ChromeOptions chromeOptions = new ChromeOptions();
 //        chromeOptions.addArguments("--no-sandbox");
 //        chromeOptions.addArguments("--disable-dev-shm-usage");
-        chromeOptions.addArguments("--headless");
+//        chromeOptions.addArguments("--headless");
         return chromeOptions;
     }
 
