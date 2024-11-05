@@ -1,0 +1,90 @@
+name: Deploy to Kubernetes
+
+'on':
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      statuses: write
+      checks: write
+      contents: write
+      pull-requests: write
+      actions: write
+
+    env:
+      # Define a dynamic release name using GitHub Actions run ID for uniqueness
+      RELEASE_NAME: selenium-grid-${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+          cache: maven
+      - name: Install kubectl
+        run: >
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s
+          https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+      - name: Verify kubectl version
+        run: kubectl version --client
+      - name: Install Helm
+        run: >
+          curl
+          https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 |
+          bash
+      - name: Verify Helm version
+        run: helm version
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: ap-south-1
+      - name: Check aws config done
+        run: |
+          aws sts get-caller-identity
+      - name: Set up kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region ap-south-1 --name selenium-grid
+      - name: Deploy with kubectl
+        run: |
+          kubectl get pods
+      - name: Install Helm Chart
+        run: |
+         cd helm/selenium-helm
+         helm install ${{ env.RELEASE_NAME }} selenium-grid --wait
+      - name: Test Deployment
+        run: kubectl get all
+
+      - name: Get Service URL
+        id: get_service_url
+        run: |
+          SERVICE_URL=$(kubectl get svc selenium-hub-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "SERVICE_URL=${SERVICE_URL}" >> $GITHUB_ENV
+          echo "Service URL is ${{ env.SERVICE_URL }}"
+      - name: Wait for selenium grid to be ready
+        run: |
+          ls
+          chmod +x scripts/waitforseleniumhub.sh
+          scripts/waitforseleniumhub.sh ${{ env.SERVICE_URL }}
+      - name: test with maven
+        run: mvn clean test -Dselenium.gridurl=${{ env.SERVICE_URL }}
+      - name: Report test results
+        uses: dorny/test-reporter@v1.9.1
+        with:
+          name: Maven Surefire
+          path: "**/surefire-reports/TEST-*.xml"
+          reporter: java-junit
+
+      - name: Cleanup Helm Chart
+        if: always()
+        run: helm uninstall ${{ env.RELEASE_NAME }}
+        continue-on-error: true  # This step will not fail the job
