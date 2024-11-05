@@ -31,7 +31,9 @@ jobs:
         run: >
           curl -LO "https://dl.k8s.io/release/$(curl -L -s
           https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
           chmod +x ./kubectl
+
           sudo mv ./kubectl /usr/local/bin/kubectl
       - name: Verify kubectl version
         run: kubectl version --client
@@ -59,8 +61,9 @@ jobs:
           kubectl get pods
       - name: Install Helm Chart
         run: |
-         cd helm/selenium-helm
-         helm install ${{ env.RELEASE_NAME }} selenium-grid --wait
+          cd helm/selenium-helm
+          helm install ${{ env.RELEASE_NAME }} selenium-grid --wait
+
       - name: Test Deployment
         run: kubectl get all
 
@@ -70,11 +73,13 @@ jobs:
           SERVICE_URL=$(kubectl get svc selenium-hub-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           echo "SERVICE_URL=${SERVICE_URL}" >> $GITHUB_ENV
           echo "Service URL is ${{ env.SERVICE_URL }}"
+
       - name: Wait for selenium grid to be ready
         run: |
           ls
           chmod +x scripts/waitforseleniumhub.sh
-          scripts/waitforseleniumhub.sh ${{ env.SERVICE_URL }}
+          scripts/waitforseleniumhub.sh ${{ env.SERVICE_URL }}  
+
       - name: test with maven
         run: mvn clean test -Dselenium.gridurl=${{ env.SERVICE_URL }}
       - name: Report test results
