@@ -28,7 +28,7 @@ public class DriverManager {
         threadLocalDriver.get().manage().window().maximize();
         return threadLocalDriver.get();
     }
-
+//Testing
     public static ChromeOptions getChromeOptions(){
         ChromeOptions chromeOptions = new ChromeOptions();
 //        chromeOptions.addArguments("--no-sandbox");
