@@ -1,0 +1,4 @@
+
+image:
+  hub: "selenium/hub:4.7.2-20221219"
+  chrome: "selenium/node-chrome:latest"
