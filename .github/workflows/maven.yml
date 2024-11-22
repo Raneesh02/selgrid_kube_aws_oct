@@ -1,0 +1,25 @@
+name: Java CI with Maven
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest # image of the virtual machine to run on 
+
+    steps:
+      - uses: actions/checkout@v4 # checkout the repository so your workflow can access it
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+          cache: maven
+      - name: Install Google Chrome # Using shell script to install Google Chrome
+        run: |
+          chmod +x ./scripts/InstallChrome.sh
+                      ./scripts/InstallChrome.sh
+      - name: test with maven
+        run: mvn clean test

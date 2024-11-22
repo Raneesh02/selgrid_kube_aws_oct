@@ -7,13 +7,18 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+
+
   <name>selgrid_kube_aws_oct</name>
   <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <selenium.gridurl>"http://localhost:4444"</selenium.gridurl>
+    <!--<maven.compiler.source>22</maven.compiler.source>
+    <maven.compiler.target>22</maven.compiler.target>-->
   </properties>
+
 
   <dependencies>
     <dependency>

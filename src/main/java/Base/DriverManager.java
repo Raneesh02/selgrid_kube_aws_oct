@@ -10,7 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class DriverManager {
-
+//Test 235
     private static ThreadLocal<WebDriver> threadLocalDriver= new ThreadLocal<>();
 
     public static WebDriver initDriver(){
@@ -28,12 +28,12 @@ public class DriverManager {
         threadLocalDriver.get().manage().window().maximize();
         return threadLocalDriver.get();
     }
-
+//Testing
     public static ChromeOptions getChromeOptions(){
         ChromeOptions chromeOptions = new ChromeOptions();
 //        chromeOptions.addArguments("--no-sandbox");
 //        chromeOptions.addArguments("--disable-dev-shm-usage");
-//        chromeOptions.addArguments("--headless");
+        //chromeOptions.addArguments("--headless");
         return chromeOptions;
     }
 
