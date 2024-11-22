@@ -46,6 +46,7 @@ public class FilterTests extends BaseTest {
 
     @Test
     public void testNoFilterResults(){
+        //this is test
         Homepage homepage = new Homepage(DriverManager.getDriver());
         FilterSideBar filterBar = homepage.getFilterBar();
         filterBar.selectFilterCategory("Grinder");
