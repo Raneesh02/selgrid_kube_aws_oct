@@ -36,7 +36,7 @@ public class DriverManager {
         chromeOptions.addArguments("--headless");
         return chromeOptions;
     }
-
+    //Testing
     private static String getGridUrl(){
         String gridUrl=null;
         String gridUrlProp=PropertyHandler.getProperty(PropertyHandler.SELGRID_URL_KEY);
